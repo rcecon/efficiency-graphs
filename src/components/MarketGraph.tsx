@@ -312,62 +312,62 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
   }
 
   return (
-    <div className="relative bg-white rounded-xl border border-stone-200/90 p-3 sm:p-4 shadow-xs select-none">
+    <div className="relative bg-white rounded-xl border border-stone-200/90 p-2.5 sm:p-4 shadow-xs select-none">
       {/* Dual Intervention Comparison Toolbar (when secondary is active) */}
       {isComparing && (
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3 p-2.5 bg-violet-50/70 border border-violet-200/80 rounded-lg text-xs">
-          <div className="flex items-center gap-1.5 font-bold text-violet-950">
+        <div className="flex items-center justify-between gap-1.5 mb-2 p-2 bg-violet-50/70 border border-violet-200/80 rounded-lg text-xs overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1.5 font-bold text-violet-950 whitespace-nowrap">
             <span className="w-2 h-2 rounded-full bg-violet-600 animate-pulse" />
-            <span>Comparing Two Interventions:</span>
+            <span className="hidden xs:inline">Compare:</span>
           </div>
 
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1 flex-nowrap">
             <button
               onClick={() => onComparisonViewChange && onComparisonViewChange('primary')}
-              className={`px-3 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-md text-[11px] sm:text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                 comparisonView === 'primary'
                   ? 'bg-stone-900 text-white shadow-xs'
                   : 'bg-white border border-stone-300 text-stone-700 hover:bg-stone-100'
               }`}
             >
-              1. Show Policy 1 Areas
+              1. Policy 1
             </button>
 
             <button
               onClick={() => onComparisonViewChange && onComparisonViewChange('secondary')}
-              className={`px-3 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-md text-[11px] sm:text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                 comparisonView === 'secondary'
                   ? 'bg-violet-700 text-white shadow-xs'
                   : 'bg-white border border-stone-300 text-stone-700 hover:bg-stone-100'
               }`}
             >
-              2. Show Policy 2 Areas
+              2. Policy 2
             </button>
 
             <button
               onClick={() => onComparisonViewChange && onComparisonViewChange('overlay')}
-              className={`px-3 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-md text-[11px] sm:text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                 comparisonView === 'overlay'
                   ? 'bg-emerald-700 text-white shadow-xs'
                   : 'bg-white border border-stone-300 text-stone-700 hover:bg-stone-100'
               }`}
             >
-              3. Overlay Both & Compare DWL
+              3. Change in DWL (ΔDWL)
             </button>
           </div>
         </div>
       )}
       {/* Interactive Display Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b border-stone-100 text-xs">
-        <div className="flex items-center gap-1.5 font-semibold text-stone-700">
-          <span>Surplus & Incidence:</span>
+      <div className="flex items-center justify-between gap-1.5 mb-2 pb-2 border-b border-stone-100 text-xs overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1 font-semibold text-stone-700 whitespace-nowrap text-[11px] sm:text-xs">
+          <span>Surplus:</span>
         </div>
 
         {/* Display Mode Segmented Controls */}
-        <div className="flex items-center gap-1 flex-wrap">
+        <div className="flex items-center gap-1 flex-nowrap sm:flex-wrap">
           <button
             onClick={() => onDisplayModeChange && onDisplayModeChange('all')}
-            className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+            className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
               displayMode === 'all'
                 ? 'bg-stone-800 text-white shadow-xs font-semibold'
                 : 'text-stone-600 hover:bg-stone-100'
@@ -507,7 +507,7 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
       {/* SVG Canvas */}
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="w-full h-auto overflow-visible select-none"
+        className="w-full h-auto max-h-[38vh] sm:max-h-none mx-auto overflow-visible select-none"
       >
         <defs>
           <pattern id="dwl-hatch" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">

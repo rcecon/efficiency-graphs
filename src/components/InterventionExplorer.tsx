@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MarketGraph } from './MarketGraph';
 import { MarketState, InterventionType, SurplusDisplayMode } from '../types/economics';
 import { calculateMarketMetrics, DEFAULT_MARKET_STATE } from '../utils/economicModel';
-import { Sliders, Layers, Coins, Gift, Plus, Trash2, GitCompare, RotateCcw } from 'lucide-react';
+import { Sliders, Layers, Coins, Gift, Plus, Trash2, GitCompare, RotateCcw, Eye, EyeOff } from 'lucide-react';
 
 export const InterventionExplorer: React.FC = () => {
   const [state, setState] = useState<MarketState>({
@@ -16,6 +16,7 @@ export const InterventionExplorer: React.FC = () => {
   const [secondaryMagnitude, setSecondaryMagnitude] = useState<number>(75);
   const [comparisonView, setComparisonView] = useState<'primary' | 'secondary' | 'overlay'>('primary');
   const [displayMode, setDisplayMode] = useState<SurplusDisplayMode>('all');
+  const [showChangeExplanations, setShowChangeExplanations] = useState<boolean>(false);
 
   const calculateState = (type: InterventionType, val: number): MarketState => {
     if (type === 'none' || val === 0) {
@@ -160,24 +161,24 @@ export const InterventionExplorer: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-5">
       {/* Module Title Banner */}
-      <div className="bg-white rounded-xl border border-stone-200 p-5 sm:p-6 shadow-xs">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white rounded-xl border border-stone-200 p-3 sm:p-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Sliders className="w-5 h-5 text-[#52b788]" />
-              <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Sliders className="w-4 h-4 sm:w-5 sm:h-5 text-[#52b788]" />
+              <h2 className="text-base sm:text-xl font-bold text-stone-900 tracking-tight">
                 Market Intervention & Surplus Explorer
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-stone-600">
+            <p className="text-xs text-stone-600 hidden sm:block mt-0.5">
               Analyse market intervention diagrams, consumer surplus (CS), producer surplus (PS), change in CS/PS, and deadweight loss.
             </p>
           </div>
 
-          {/* Intervention Policy Tabs */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-stone-100 rounded-lg">
+          {/* Intervention Policy Tabs (horizontally scrollable on mobile) */}
+          <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-lg overflow-x-auto no-scrollbar flex-nowrap sm:flex-wrap">
             {(
               [
                 { id: 'ceiling', label: 'Price Ceiling' },
@@ -185,16 +186,16 @@ export const InterventionExplorer: React.FC = () => {
                 { id: 'quota', label: 'Quota' },
                 { id: 'tax', label: 'Unit Tax' },
                 { id: 'subsidy', label: 'Unit Subsidy' },
-                { id: 'none', label: 'Free Market (No Policy)' },
+                { id: 'none', label: 'Free Market' },
               ] as const
             ).map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleInterventionChange(item.id)}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                className={`px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer whitespace-nowrap ${
                   state.interventionType === item.id
                     ? 'bg-[#52b788] text-white shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900'
+                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
                 }`}
               >
                 {item.label}
@@ -205,9 +206,9 @@ export const InterventionExplorer: React.FC = () => {
       </div>
 
       {/* Main Grid: Graph + Controls & Surplus Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Interactive Diagram */}
-        <div className="lg:col-span-7 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 items-start">
+        {/* Left Column: Interactive Diagram & Slide Bars (Visible simultaneously on all screens) */}
+        <div className="lg:col-span-7 space-y-3">
           <MarketGraph
             state={state}
             metrics={metrics}
@@ -219,87 +220,159 @@ export const InterventionExplorer: React.FC = () => {
             onDisplayModeChange={setDisplayMode}
           />
 
-          {/* Conceptual Status Matrix */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <div className="bg-white p-3 rounded-xl border border-stone-200">
-              <span className="block text-[11px] font-medium text-stone-500 uppercase tracking-wider">
-                Transacted Q vs Q*
-              </span>
-              <span className="text-sm font-bold text-stone-900 block mt-0.5">
-                {activeMetrics.status === 'efficient'
-                  ? 'Qt = Q* (Equilibrium)'
-                  : activeMetrics.status === 'underproduction'
-                  ? 'Qt < Q* (Underproduction)'
-                  : 'Qt > Q* (Overproduction)'}
-              </span>
-              <span className="block text-[10px] text-stone-500 mt-1">
-                {activeMetrics.status === 'efficient' ? 'MB = MC' : activeMetrics.status === 'underproduction' ? 'MB > MC' : 'MC > MB'}
-              </span>
-            </div>
-
-            <div className="bg-white p-3 rounded-xl border border-stone-200">
-              <span className="block text-[11px] font-medium text-stone-500 uppercase tracking-wider">
-                Consumer Surplus
-              </span>
-              <span className="text-sm font-bold text-sky-800 block mt-0.5">
-                {activeMetrics.csAreaDesc}
-              </span>
-              <span className="block text-[10px] text-stone-500 mt-1">
-                Change: {activeMetrics.changeCsDesc}
+          {/* Primary Intervention Slide Bar Card */}
+          <div className="bg-white rounded-xl border border-stone-200 p-3 sm:p-4 shadow-xs space-y-2.5">
+            <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-600" />
+                <h3 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wide">
+                  {hasSecondary ? `Policy 1 (Original ${getInterventionName(state.interventionType)})` : `${getInterventionName(state.interventionType)} Setting`}
+                </h3>
+              </div>
+              <span
+                className={`text-[11px] font-semibold px-2 py-0.5 rounded ${
+                  metrics.isEffective
+                    ? 'bg-rose-50 text-rose-800 border border-rose-200'
+                    : 'bg-[#edf7f2] text-[#2d6a4f] border border-[#cde6d8]'
+                }`}
+              >
+                {state.interventionType === 'none' || magnitude === 0
+                  ? 'No Intervention (Equilibrium)'
+                  : metrics.isEffective
+                  ? 'Effective (Binds)'
+                  : 'Ineffective'}
               </span>
             </div>
 
-            <div className="bg-white p-3 rounded-xl border border-stone-200">
-              <span className="block text-[11px] font-medium text-stone-500 uppercase tracking-wider">
-                Producer Surplus
-              </span>
-              <span className="text-sm font-bold text-amber-800 block mt-0.5">
-                {activeMetrics.psAreaDesc}
-              </span>
-              <span className="block text-[10px] text-stone-500 mt-1">
-                Change: {activeMetrics.changePsDesc}
-              </span>
+            {/* Slide Bar for Policy 1 */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <label htmlFor="primary-magnitude-slider" className="font-semibold text-stone-700">
+                  {getParamLabel(state.interventionType, 1)}:
+                </label>
+                <span className="font-medium text-[#2d6a4f] bg-[#eef7f2] px-2 py-0.5 rounded border border-[#cde6d8] text-[11px] sm:text-xs">
+                  {getMagnitudeLabel(magnitude)}
+                </span>
+              </div>
+
+              <div className="relative pt-0.5">
+                <input
+                  id="primary-magnitude-slider"
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={state.interventionType === 'none' ? 0 : magnitude}
+                  onChange={(e) => handleMagnitudeChange(Number(e.target.value))}
+                  className="w-full h-3 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-[#dc2626] transition-all touch-none"
+                />
+                <div className="flex justify-between text-[10px] sm:text-[11px] text-stone-500 mt-1 font-medium">
+                  <span className="flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400" />
+                    {state.interventionType === 'tax' || state.interventionType === 'subsidy' ? 'Zero (S₀)' : 'Equilibrium'}
+                  </span>
+                  <span>Moderate</span>
+                  <span className="flex items-center gap-1">
+                    High
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div className="bg-white p-3 rounded-xl border border-stone-200">
-              <span className="block text-[11px] font-medium text-stone-500 uppercase tracking-wider">
-                {hasSecondary && comparisonView === 'overlay' ? 'Change in DWL (ΔDWL)' : 'Deadweight Loss'}
-              </span>
-              <span className={`text-sm font-bold block mt-0.5 ${
-                hasSecondary && comparisonView === 'overlay'
-                  ? secondaryMagnitude > magnitude
-                    ? 'text-rose-700'
-                    : secondaryMagnitude < magnitude
-                    ? 'text-emerald-700'
-                    : 'text-stone-700'
-                  : 'text-rose-700'
-              }`}>
-                {hasSecondary && comparisonView === 'overlay'
-                  ? magnitude === secondaryMagnitude
-                    ? 'ΔDWL = 0 (Identical)'
-                    : secondaryMagnitude > magnitude
-                    ? 'ΔDWL: Increase (+ Loss)'
-                    : 'ΔDWL: Decrease (− Gain)'
-                  : activeMetrics.dwlAreaDesc}
-              </span>
-              <span className="block text-[10px] text-stone-500 mt-1">
-                {hasSecondary && comparisonView === 'overlay'
-                  ? magnitude === secondaryMagnitude
-                    ? 'Both policies cause identical market distortion'
-                    : secondaryMagnitude > magnitude
-                    ? 'Policy 2 is more restrictive (additional DWL between Q₁ and Q₂)'
-                    : 'Policy 2 reduces distortion (welfare surplus recovered)'
-                  : activeMetrics.isEffective ? 'Market is Inefficient' : 'Efficiency Attained'}
-              </span>
-            </div>
+            {/* "+ Add another Intervention" Button (when single policy mode) */}
+            {state.interventionType !== 'none' && !hasSecondary && (
+              <div className="pt-2 border-t border-stone-100">
+                <button
+                  onClick={handleAddSecondary}
+                  className="w-full py-2 px-3 bg-violet-50 hover:bg-violet-100 text-violet-900 border border-violet-200 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs hover:shadow-xs"
+                >
+                  <Plus className="w-4 h-4 text-violet-700" />
+                  <span>+ Add another {getInterventionName(state.interventionType)}</span>
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* Secondary Intervention Slide Bar Card (when active) */}
+          {hasSecondary && secondaryState && secondaryMetrics && (
+            <div className="bg-white rounded-xl border border-violet-200 p-3 sm:p-4 shadow-xs space-y-2.5">
+              <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-violet-600 animate-pulse" />
+                  <h3 className="text-xs sm:text-sm font-bold text-violet-950 uppercase tracking-wide">
+                    Policy 2 (New {getInterventionName(state.interventionType)})
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-[11px] font-semibold px-2 py-0.5 rounded ${
+                      secondaryMetrics.isEffective
+                        ? 'bg-violet-50 text-violet-800 border border-violet-200'
+                        : 'bg-stone-50 text-stone-600 border border-stone-200'
+                    }`}
+                  >
+                    {secondaryMagnitude === 0
+                      ? 'No Intervention'
+                      : secondaryMetrics.isEffective
+                      ? 'Effective (Binds)'
+                      : 'Ineffective'}
+                  </span>
+                  <button
+                    onClick={handleRemoveSecondary}
+                    className="flex items-center gap-1 px-2 py-0.5 bg-white hover:bg-rose-50 text-rose-700 hover:text-rose-800 border border-stone-200 hover:border-rose-200 rounded text-[11px] font-semibold transition-all cursor-pointer"
+                    title="Remove second intervention"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>Remove</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Independent Slide Bar for Policy 2 */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs">
+                  <label htmlFor="secondary-magnitude-slider" className="font-semibold text-stone-700">
+                    {getParamLabel(state.interventionType, 2)}:
+                  </label>
+                  <span className="font-medium text-violet-800 bg-violet-50 px-2 py-0.5 rounded border border-violet-200 text-[11px] sm:text-xs">
+                    {getMagnitudeLabel(secondaryMagnitude)}
+                  </span>
+                </div>
+
+                <div className="relative pt-0.5">
+                  <input
+                    id="secondary-magnitude-slider"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={secondaryMagnitude}
+                    onChange={(e) => handleSecondaryMagnitudeChange(Number(e.target.value))}
+                    className="w-full h-3 bg-violet-100 rounded-lg appearance-none cursor-pointer accent-[#7c3aed] transition-all touch-none"
+                  />
+                  <div className="flex justify-between text-[10px] sm:text-[11px] text-stone-500 mt-1 font-medium">
+                    <span className="flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-stone-400" />
+                      {state.interventionType === 'tax' || state.interventionType === 'subsidy' ? 'Zero (S₀)' : 'Equilibrium'}
+                    </span>
+                    <span>Moderate</span>
+                    <span className="flex items-center gap-1">
+                      High
+                      <span className="w-1.5 h-1.5 rounded-full bg-violet-600" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Right Column: Policy Setting, Dual Comparison, and CS/PS Analysis */}
-        <div className="lg:col-span-5 space-y-4">
+        {/* Right Column: Comparative Controls, CS/PS Explanations & Incidence Analysis */}
+        <div className="lg:col-span-5 space-y-3 sm:space-y-4">
           {/* Dual Intervention Comparison Toolbar (when secondary is active) */}
           {hasSecondary && (
-            <div className="bg-violet-50/80 rounded-xl border border-violet-200 p-4 shadow-xs space-y-3">
+            <div className="bg-violet-50/80 rounded-xl border border-violet-200 p-3 sm:p-4 shadow-xs space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 font-bold text-violet-950 text-xs">
                   <GitCompare className="w-4 h-4 text-violet-700" />
@@ -329,7 +402,7 @@ export const InterventionExplorer: React.FC = () => {
                         : 'bg-white border border-violet-200 text-stone-700 hover:bg-violet-100/50'
                     }`}
                   >
-                    1. Policy 1 (Original)
+                    1. Policy 1
                   </button>
 
                   <button
@@ -340,7 +413,7 @@ export const InterventionExplorer: React.FC = () => {
                         : 'bg-white border border-violet-200 text-stone-700 hover:bg-violet-100/50'
                     }`}
                   >
-                    2. Policy 2 (New)
+                    2. Policy 2
                   </button>
 
                   <button
@@ -358,147 +431,8 @@ export const InterventionExplorer: React.FC = () => {
             </div>
           )}
 
-          {/* Primary Intervention Card */}
-          <div className="bg-white rounded-xl border border-stone-200 p-4 sm:p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-2">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-600" />
-                <h3 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wide">
-                  {hasSecondary ? `Policy 1 (Original ${getInterventionName(state.interventionType)})` : 'Intervention Condition'}
-                </h3>
-              </div>
-              <span
-                className={`text-[11px] font-semibold px-2 py-0.5 rounded ${
-                  metrics.isEffective
-                    ? 'bg-rose-50 text-rose-800 border border-rose-200'
-                    : 'bg-[#edf7f2] text-[#2d6a4f] border border-[#cde6d8]'
-                }`}
-              >
-                {state.interventionType === 'none' || magnitude === 0
-                  ? 'No Intervention (Equilibrium)'
-                  : metrics.isEffective
-                  ? 'Effective (Binds)'
-                  : 'Ineffective'}
-              </span>
-            </div>
-
-            {/* Slide Bar for Policy 1 */}
-            <div className="space-y-3 pt-1">
-              <div className="flex items-center justify-between text-xs">
-                <label htmlFor="primary-magnitude-slider" className="font-semibold text-stone-700">
-                  {getParamLabel(state.interventionType, 1)}:
-                </label>
-                <span className="font-medium text-[#2d6a4f] bg-[#eef7f2] px-2.5 py-0.5 rounded border border-[#cde6d8]">
-                  {getMagnitudeLabel(magnitude)}
-                </span>
-              </div>
-
-              <div className="relative pt-1">
-                <input
-                  id="primary-magnitude-slider"
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="1"
-                  value={state.interventionType === 'none' ? 0 : magnitude}
-                  onChange={(e) => handleMagnitudeChange(Number(e.target.value))}
-                  className="w-full h-2.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-[#dc2626] transition-all"
-                />
-                <div className="flex justify-between text-[11px] text-stone-500 mt-2 font-medium">
-                  <span className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400" />
-                    {state.interventionType === 'tax' || state.interventionType === 'subsidy' ? 'Zero (S₀)' : 'Equilibrium (Pe / Q*)'}
-                  </span>
-                  <span>Moderate</span>
-                  <span className="flex items-center gap-1">
-                    High Magnitude
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* "+ Add another Intervention" Button (when single policy mode) */}
-            {state.interventionType !== 'none' && !hasSecondary && (
-              <div className="pt-2 border-t border-stone-100">
-                <button
-                  onClick={handleAddSecondary}
-                  className="w-full py-2.5 px-3 bg-violet-50 hover:bg-violet-100 text-violet-900 border border-violet-200 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-2xs hover:shadow-xs"
-                >
-                  <Plus className="w-4 h-4 text-violet-700" />
-                  <span>+ Add another {getInterventionName(state.interventionType)}</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Secondary Intervention Card (when active) */}
-          {hasSecondary && secondaryState && secondaryMetrics && (
-            <div className="bg-white rounded-xl border border-violet-200 p-4 sm:p-5 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-stone-100 pb-2">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-violet-600 animate-pulse" />
-                  <h3 className="text-xs sm:text-sm font-bold text-violet-950 uppercase tracking-wide">
-                    Policy 2 (New {getInterventionName(state.interventionType)})
-                  </h3>
-                </div>
-                <span
-                  className={`text-[11px] font-semibold px-2 py-0.5 rounded ${
-                    secondaryMetrics.isEffective
-                      ? 'bg-violet-50 text-violet-800 border border-violet-200'
-                      : 'bg-stone-50 text-stone-600 border border-stone-200'
-                  }`}
-                >
-                  {secondaryMagnitude === 0
-                    ? 'No Intervention'
-                    : secondaryMetrics.isEffective
-                    ? 'Effective (Binds)'
-                    : 'Ineffective'}
-                </span>
-              </div>
-
-              {/* Independent Slide Bar for Policy 2 */}
-              <div className="space-y-3 pt-1">
-                <div className="flex items-center justify-between text-xs">
-                  <label htmlFor="secondary-magnitude-slider" className="font-semibold text-stone-700">
-                    {getParamLabel(state.interventionType, 2)}:
-                  </label>
-                  <span className="font-medium text-violet-800 bg-violet-50 px-2.5 py-0.5 rounded border border-violet-200">
-                    {getMagnitudeLabel(secondaryMagnitude)}
-                  </span>
-                </div>
-
-                <div className="relative pt-1">
-                  <input
-                    id="secondary-magnitude-slider"
-                    type="range"
-                    min="0"
-                    max="100"
-                    step="1"
-                    value={secondaryMagnitude}
-                    onChange={(e) => handleSecondaryMagnitudeChange(Number(e.target.value))}
-                    className="w-full h-2.5 bg-violet-100 rounded-lg appearance-none cursor-pointer accent-[#7c3aed] transition-all"
-                  />
-                  <div className="flex justify-between text-[11px] text-stone-500 mt-2 font-medium">
-                    <span className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-stone-400" />
-                      {state.interventionType === 'tax' || state.interventionType === 'subsidy' ? 'Zero (S₀)' : 'Equilibrium (Pe / Q*)'}
-                    </span>
-                    <span>Moderate</span>
-                    <span className="flex items-center gap-1">
-                      High Magnitude
-                      <span className="w-1.5 h-1.5 rounded-full bg-violet-600" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-
-
           {/* Change in CS and Change in PS Deep-Dive Card */}
-          <div className="bg-white rounded-xl border border-stone-200 p-4 sm:p-5 shadow-xs space-y-3">
+          <div className="bg-white rounded-xl border border-stone-200 p-3.5 sm:p-5 shadow-xs space-y-3">
             <div className="flex items-center justify-between border-b border-stone-100 pb-2">
               <h3 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wide flex items-center gap-1.5">
                 <Layers className="w-4 h-4 text-[#52b788]" />
@@ -533,48 +467,74 @@ export const InterventionExplorer: React.FC = () => {
               </button>
             </div>
 
-            {/* Detailed Explanations */}
-            <div className="space-y-2.5 text-xs text-stone-700 pt-1">
-              {/* Change in CS box */}
-              <div className="p-3 bg-stone-50 rounded-lg border border-stone-200/80 space-y-1">
-                <span className="font-bold text-sky-900 block">
-                  Change in Consumer Surplus (CS): {activeMetrics.changeCsDesc}
-                </span>
-                {activeMetrics.changeCsDetail.gainArea && (
-                  <p className="text-[#2d6a4f]">
-                    <strong>+ Gain:</strong> {activeMetrics.changeCsDetail.gainReason} ({activeMetrics.changeCsDetail.gainArea})
-                  </p>
+            {/* Button allowing students to choose to reveal or hide the explanations */}
+            <div className="pt-1">
+              <button
+                onClick={() => setShowChangeExplanations((prev) => !prev)}
+                className={`w-full py-2 px-3 rounded-lg text-xs font-semibold border flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  showChangeExplanations
+                    ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-2xs'
+                    : 'bg-white border-stone-300 hover:border-emerald-400 text-stone-700 hover:text-emerald-800 shadow-2xs hover:bg-emerald-50/40'
+                }`}
+              >
+                {showChangeExplanations ? (
+                  <>
+                    <EyeOff className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Hide Explanations for Change in CS & PS</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Reveal Explanations (Change in CS & PS)</span>
+                  </>
                 )}
-                {activeMetrics.changeCsDetail.lossArea && (
-                  <p className="text-rose-800">
-                    <strong>- Loss:</strong> {activeMetrics.changeCsDetail.lossReason} ({activeMetrics.changeCsDetail.lossArea})
-                  </p>
-                )}
-                <div className="pt-1 text-stone-600 font-medium border-t border-stone-200">
-                  Conclusion: {activeMetrics.changeCsDetail.netConclusion}
-                </div>
-              </div>
-
-              {/* Change in PS box */}
-              <div className="p-3 bg-stone-50 rounded-lg border border-stone-200/80 space-y-1">
-                <span className="font-bold text-amber-900 block">
-                  Change in Producer Surplus (PS): {activeMetrics.changePsDesc}
-                </span>
-                {activeMetrics.changePsDetail.gainArea && (
-                  <p className="text-[#2d6a4f]">
-                    <strong>+ Gain:</strong> {activeMetrics.changePsDetail.gainReason} ({activeMetrics.changePsDetail.gainArea})
-                  </p>
-                )}
-                {activeMetrics.changePsDetail.lossArea && (
-                  <p className="text-rose-800">
-                    <strong>- Loss:</strong> {activeMetrics.changePsDetail.lossReason} ({activeMetrics.changePsDetail.lossArea})
-                  </p>
-                )}
-                <div className="pt-1 text-stone-600 font-medium border-t border-stone-200">
-                  Conclusion: {activeMetrics.changePsDetail.netConclusion}
-                </div>
-              </div>
+              </button>
             </div>
+
+            {/* Detailed Explanations (Hidden by default; revealed on button click) */}
+            {showChangeExplanations && (
+              <div className="space-y-2.5 text-xs text-stone-700 pt-1">
+                {/* Change in CS box */}
+                <div className="p-3 bg-stone-50 rounded-lg border border-stone-200/80 space-y-1">
+                  <span className="font-bold text-sky-900 block">
+                    Change in Consumer Surplus (CS): {activeMetrics.changeCsDesc}
+                  </span>
+                  {activeMetrics.changeCsDetail.gainArea && (
+                    <p className="text-[#2d6a4f]">
+                      <strong>+ Gain:</strong> {activeMetrics.changeCsDetail.gainReason} ({activeMetrics.changeCsDetail.gainArea})
+                    </p>
+                  )}
+                  {activeMetrics.changeCsDetail.lossArea && (
+                    <p className="text-rose-800">
+                      <strong>- Loss:</strong> {activeMetrics.changeCsDetail.lossReason} ({activeMetrics.changeCsDetail.lossArea})
+                    </p>
+                  )}
+                  <div className="pt-1 text-stone-600 font-medium border-t border-stone-200">
+                    Conclusion: {activeMetrics.changeCsDetail.netConclusion}
+                  </div>
+                </div>
+
+                {/* Change in PS box */}
+                <div className="p-3 bg-stone-50 rounded-lg border border-stone-200/80 space-y-1">
+                  <span className="font-bold text-amber-900 block">
+                    Change in Producer Surplus (PS): {activeMetrics.changePsDesc}
+                  </span>
+                  {activeMetrics.changePsDetail.gainArea && (
+                    <p className="text-[#2d6a4f]">
+                      <strong>+ Gain:</strong> {activeMetrics.changePsDetail.gainReason} ({activeMetrics.changePsDetail.gainArea})
+                    </p>
+                  )}
+                  {activeMetrics.changePsDetail.lossArea && (
+                    <p className="text-rose-800">
+                      <strong>- Loss:</strong> {activeMetrics.changePsDetail.lossReason} ({activeMetrics.changePsDetail.lossArea})
+                    </p>
+                  )}
+                  <div className="pt-1 text-stone-600 font-medium border-t border-stone-200">
+                    Conclusion: {activeMetrics.changePsDetail.netConclusion}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Tax Burden Deep-Dive Card (Unit Tax) */}
