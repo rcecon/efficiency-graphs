@@ -1,0 +1,6 @@
+{
+  "name": "HKDSE Econ Master: Market Intervention & Efficiency",
+  "description": "Interactive learning platform for HKDSE Economics students exploring market interventions, surplus analysis (CS, PS, TSS), deadweight loss, and sentence-by-sentence answer construction.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
