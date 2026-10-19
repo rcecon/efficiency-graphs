@@ -1338,104 +1338,55 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
           </g>
         )}
 
-        {/* Letter annotations matching textbook diagram conventions */}
-        <g className="font-mono text-xs fill-stone-500 font-bold select-none pointer-events-none">
-          <text x={padding.left + 8} y={toSvgY(a) + 14}>A</text>
-          <text x={padding.left + 8} y={toSvgY(c) - 6}>B</text>
-          {isEffective && (
-            <>
-              <text x={transX - 14} y={toSvgY(transactedPrice) - 6}>C</text>
-              <text x={transX - 14} y={toSvgY(c + d * transactedQty) + 12}>F</text>
-              {interventionType === 'ceiling' && (
-                <text x={(padding.left + transX) / 2} y={(eqY + pBuyerY) / 2 + 4} fill="#059669">E</text>
-              )}
-              {interventionType === 'floor' && (
-                <text x={(padding.left + transX) / 2} y={(eqY + pBuyerY) / 2 + 4} fill="#059669">B</text>
-              )}
-            </>
-          )}
-        </g>
+        {/* Diagram Color Legend for Change in CS / Change in PS */}
+        {(displayMode === 'change_cs' || displayMode === 'change_ps') && isEffective && (
+          <g className="text-[11px] font-semibold select-none">
+            <rect
+              x={padding.left + 8}
+              y={padding.top + 8}
+              width="186"
+              height="46"
+              rx="6"
+              fill="#ffffff"
+              fillOpacity={0.96}
+              stroke="#cbd5e1"
+              strokeWidth="1"
+              filter="drop-shadow(0 1px 3px rgba(0,0,0,0.08))"
+            />
+            {/* Green Gain */}
+            <rect
+              x={padding.left + 16}
+              y={padding.top + 16}
+              width="14"
+              height="10"
+              rx="2"
+              fill="#10b981"
+              fillOpacity={0.4}
+              stroke="#059669"
+              strokeWidth="1.2"
+            />
+            <text x={padding.left + 36} y={padding.top + 25} className="fill-emerald-800 font-bold text-[10px]">
+              Green Shaded = + Gain in Surplus
+            </text>
+            {/* Red Loss */}
+            <rect
+              x={padding.left + 16}
+              y={padding.top + 31}
+              width="14"
+              height="10"
+              rx="2"
+              fill="#f43f5e"
+              fillOpacity={0.4}
+              stroke="#e11d48"
+              strokeWidth="1.2"
+            />
+            <text x={padding.left + 36} y={padding.top + 40} className="fill-rose-800 font-bold text-[10px]">
+              Red Shaded = − Loss in Surplus
+            </text>
+          </g>
+        )}
       </svg>
 
-      {/* Explanatory Caption for Active Display Mode */}
-      <div className="mt-2.5 pt-2 border-t border-stone-100 flex flex-wrap items-center justify-between text-xs text-stone-600">
-        <div>
-          {isComparing && comparisonView === 'overlay' ? (
-            <span>
-              <strong className={deltaDwlType === 'increase' ? 'text-rose-800' : deltaDwlType === 'decrease' ? 'text-emerald-800' : 'text-stone-800'}>
-                Change in Deadweight Loss (ΔDWL):
-              </strong>{' '}
-              {deltaDwlType === 'increase'
-                ? `Policy 2 creates an Increase in Deadweight Loss (+ΔDWL: additional deadweight loss between Q₁ and Q₂ bounded by MB and MC)`
-                : deltaDwlType === 'decrease'
-                ? `Policy 2 creates a Decrease in Deadweight Loss (−ΔDWL: welfare surplus recovered between Q₁ and Q₂ bounded by MB and MC)`
-                : `Both policies cause the identical quantity distortion, so Change in Deadweight Loss is zero (ΔDWL = 0)`}
-            </span>
-          ) : (
-            <>
-              {displayMode === 'cs' && (
-                <span>
-                  <strong className="text-sky-800">Consumer Surplus (CS):</strong> {activeMetrics.csAreaDesc}
-                </span>
-              )}
-              {displayMode === 'ps' && (
-                <span>
-                  <strong className="text-amber-800">Producer Surplus (PS):</strong> {activeMetrics.psAreaDesc}
-                </span>
-              )}
-              {displayMode === 'change_cs' && (
-                <span>
-                  <strong className="text-emerald-800">Change in CS:</strong> {activeMetrics.changeCsDesc}
-                </span>
-              )}
-              {displayMode === 'change_ps' && (
-                <span>
-                  <strong className="text-purple-800">Change in PS:</strong> {activeMetrics.changePsDesc}
-                </span>
-              )}
-              {displayMode === 'all' && (
-                <span>
-                  <strong className="text-stone-800">Deadweight Loss:</strong> {activeMetrics.dwlAreaDesc}
-                </span>
-              )}
-            </>
-          )}
-          {displayMode === 'tax_total' && (
-            <span>
-              <strong className="text-indigo-800">Total Tax Burden (Revenue):</strong> {activeMetrics.taxBurdenTotalArea || 'Rectangle between P1, P2 and Q1'} — Shared between consumers and producers
-            </span>
-          )}
-          {displayMode === 'tax_consumer' && (
-            <span>
-              <strong className="text-blue-800">Consumer Tax Burden:</strong> {activeMetrics.taxBurdenConsumerArea || 'Upper Rectangle (between P1 and Pe)'} — Buyers pay higher price P1 (Per-unit burden = P1 - Pe)
-            </span>
-          )}
-          {displayMode === 'tax_producer' && (
-            <span>
-              <strong className="text-amber-800">Producer Tax Burden:</strong> {activeMetrics.taxBurdenProducerArea || 'Lower Rectangle (between Pe and P2)'} — Sellers receive lower net price P2 (Per-unit burden = Pe - P2)
-            </span>
-          )}
-          {displayMode === 'subsidy_total' && (
-            <span>
-              <strong className="text-emerald-800">Total Subsidy Benefit (Expenditure):</strong> {activeMetrics.subsidyBenefitTotalArea || 'Rectangle between P2, P1 and Q1'} — Shared between consumers and producers
-            </span>
-          )}
-          {displayMode === 'subsidy_consumer' && (
-            <span>
-              <strong className="text-cyan-800">Consumer Subsidy Benefit:</strong> {activeMetrics.subsidyBenefitConsumerArea || 'Lower Rectangle (between Pe and P1)'} — Buyers pay lower price P1 (Per-unit benefit = Pe - P1)
-            </span>
-          )}
-          {displayMode === 'subsidy_producer' && (
-            <span>
-              <strong className="text-teal-800">Producer Subsidy Benefit:</strong> {activeMetrics.subsidyBenefitProducerArea || 'Upper Rectangle (between P2 and Pe)'} — Sellers receive higher net price P2 (Per-unit benefit = P2 - Pe)
-            </span>
-          )}
-        </div>
-
-        <div className="text-[11px] text-stone-400 font-mono">
-          HKDSE Area Representation (No raw numbers)
-        </div>
-      </div>
     </div>
   );
 };

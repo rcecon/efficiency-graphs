@@ -30,12 +30,12 @@ export function calculateMarketMetrics(state: MarketState): MarketMetrics {
   let csChange: 'increase' | 'decrease' | 'uncertain' | 'none' = 'none';
   let psChange: 'increase' | 'decrease' | 'uncertain' | 'none' = 'none';
 
-  let csAreaDesc = 'Area Pe A E0';
-  let psAreaDesc = 'Area B Pe E0';
+  let csAreaDesc = 'Shaded Light Blue Triangle (below Demand down to Pe)';
+  let psAreaDesc = 'Shaded Amber Triangle (above Supply up to Pe)';
   let changeCsDesc = 'Benchmark (Maximum Consumer Surplus)';
   let changePsDesc = 'Benchmark (Maximum Producer Surplus)';
   let dwlAreaDesc = 'Zero (Efficiency Attained: MB = MC)';
-  let tssFormula = 'CS + PS = Area B A E0';
+  let tssFormula = 'CS + PS (Maximised Social Surplus)';
 
   let changeCsDetail: {
     gainArea?: string;
@@ -81,25 +81,25 @@ export function calculateMarketMetrics(state: MarketState): MarketMetrics {
         csChange = 'uncertain';
         psChange = 'decrease';
 
-        csAreaDesc = 'Area Pc A C F';
-        psAreaDesc = 'Area B Pc F';
-        changeCsDesc = '- Area C + Area E (Uncertain)';
-        changePsDesc = '- Area E - Area F (Decreases)';
-        dwlAreaDesc = 'Area C + F';
-        tssFormula = 'CS + PS = Area B A C F';
+        csAreaDesc = 'Shaded Light Blue Area (below Demand down to Price Ceiling Pc across Qc)';
+        psAreaDesc = 'Shaded Amber Triangle (above Supply up to Price Ceiling Pc across Qc)';
+        changeCsDesc = '+ Green Gain − Red Loss (Uncertain effect on CS)';
+        changePsDesc = '− Red Loss (Decreases unambiguously)';
+        dwlAreaDesc = 'Red Shaded Triangle between Qc and Q* (Deadweight Loss from underproduction)';
+        tssFormula = 'CS + PS (TSS reduced by Red Deadweight Loss)';
 
         changeCsDetail = {
-          gainArea: 'Area E',
-          gainReason: 'Price decreases to Pc, so consumers who buy pay a lower price (Gain in CS)',
-          lossArea: 'Area C',
-          lossReason: 'Quantity supplied drops to Qc, so some consumers cannot buy the good (Loss in CS)',
-          netConclusion: 'Uncertain (depends on whether Area E is larger than Area C)',
+          gainArea: 'Green Shaded Region (lower price on Qc)',
+          gainReason: 'Consumers who buy pay a lower price Pc (Green shaded gain in CS)',
+          lossArea: 'Red Shaded Region (underproduction from Qc to Q*)',
+          lossReason: 'Quantity supplied drops to Qc due to shortage, so some consumers cannot buy the good (Red shaded loss in CS)',
+          netConclusion: 'Uncertain: depends on whether the Green gain is larger than the Red loss',
         };
 
         changePsDetail = {
-          lossArea: 'Area E + Area F',
-          lossReason: 'Producers charge a lower price Pc and produce a lower quantity Qc',
-          netConclusion: 'Decreases unambiguously',
+          lossArea: 'Red Shaded Region (lower price Pc and drop in sales to Qc)',
+          lossReason: 'Producers charge a lower price Pc for all units and produce a lower quantity Qc (Red shaded loss in PS)',
+          netConclusion: 'Decreases unambiguously (entire change is a Red shaded loss)',
         };
       }
       break;
@@ -119,25 +119,25 @@ export function calculateMarketMetrics(state: MarketState): MarketMetrics {
         csChange = 'decrease';
         psChange = 'uncertain';
 
-        csAreaDesc = 'Area Pf A C';
-        psAreaDesc = 'Area B Pf C F';
-        changeCsDesc = '- Area B - Area C (Decreases)';
-        changePsDesc = '+ Area B - Area F (Uncertain)';
-        dwlAreaDesc = 'Area C + F';
-        tssFormula = 'CS + PS = Area B A C F';
+        csAreaDesc = 'Shaded Light Blue Triangle (below Demand down to Price Floor Pf across Qf)';
+        psAreaDesc = 'Shaded Amber Area (above Supply up to Price Floor Pf across Qf)';
+        changeCsDesc = '− Red Loss (Decreases unambiguously)';
+        changePsDesc = '+ Green Gain − Red Loss (Uncertain effect on PS)';
+        dwlAreaDesc = 'Red Shaded Triangle between Qf and Q* (Deadweight Loss from underproduction)';
+        tssFormula = 'CS + PS (TSS reduced by Red Deadweight Loss)';
 
         changeCsDetail = {
-          lossArea: 'Area B + Area C',
-          lossReason: 'Consumers have to pay a higher price Pf and quantity demanded decreases to Qf',
-          netConclusion: 'Decreases unambiguously',
+          lossArea: 'Red Shaded Region (higher price Pf and drop in sales to Qf)',
+          lossReason: 'Consumers have to pay a higher price Pf and quantity demanded decreases to Qf (Red shaded loss in CS)',
+          netConclusion: 'Decreases unambiguously (entire change is a Red shaded loss)',
         };
 
         changePsDetail = {
-          gainArea: 'Area B',
-          gainReason: 'Some producers sell their product at a higher price Pf (Gain in PS)',
-          lossArea: 'Area F',
-          lossReason: 'Quantity transacted drops to Qf, so some output cannot be sold (Loss in PS)',
-          netConclusion: 'Uncertain (depends on whether Area B is larger than Area F)',
+          gainArea: 'Green Shaded Region (higher price Pf on Qf sold)',
+          gainReason: 'Producers sell transacted units Qf at a higher price Pf (Green shaded gain in PS)',
+          lossArea: 'Red Shaded Region (unsold output from Qf to Q*)',
+          lossReason: 'Quantity transacted drops to Qf due to surplus, so fewer units can be sold (Red shaded loss in PS)',
+          netConclusion: 'Uncertain: depends on whether the Green gain is larger than the Red loss',
         };
       }
       break;
@@ -154,25 +154,25 @@ export function calculateMarketMetrics(state: MarketState): MarketMetrics {
         csChange = 'decrease';
         psChange = 'uncertain';
 
-        csAreaDesc = 'Area Pq A E1';
-        psAreaDesc = 'Area B Pq E1 F';
-        changeCsDesc = '- Area B - Area C (Decreases)';
-        changePsDesc = '+ Area B - Area F (Uncertain)';
-        dwlAreaDesc = 'Area C + F';
-        tssFormula = 'CS + PS = Area B A E1 F';
+        csAreaDesc = 'Shaded Light Blue Triangle (below Demand down to Quota Price Pq across Qq)';
+        psAreaDesc = 'Shaded Amber Area (above Supply up to Quota Price Pq across Qq)';
+        changeCsDesc = '− Red Loss (Decreases unambiguously)';
+        changePsDesc = '+ Green Gain − Red Loss (Uncertain effect on PS)';
+        dwlAreaDesc = 'Red Shaded Triangle between Qq and Q* (Deadweight Loss from underproduction)';
+        tssFormula = 'CS + PS (TSS reduced by Red Deadweight Loss)';
 
         changeCsDetail = {
-          lossArea: 'Area B + Area C',
-          lossReason: 'Price rises to Pq and quantity available is restricted to Qq',
-          netConclusion: 'Decreases unambiguously',
+          lossArea: 'Red Shaded Region (higher price Pq and restricted quantity Qq)',
+          lossReason: 'Price rises to Pq and quantity available is restricted to Qq (Red shaded loss in CS)',
+          netConclusion: 'Decreases unambiguously (entire change is a Red shaded loss)',
         };
 
         changePsDetail = {
-          gainArea: 'Area B',
-          gainReason: 'Producers sell at a higher price Pq (Gain in PS)',
-          lossArea: 'Area F',
-          lossReason: 'Quantity transacted decreases to Qq (Loss in PS)',
-          netConclusion: 'Uncertain (depends on whether Area B is larger than Area F)',
+          gainArea: 'Green Shaded Region (higher price Pq on restricted Qq)',
+          gainReason: 'Producers sell restricted units Qq at a higher price Pq (Green shaded gain in PS)',
+          lossArea: 'Red Shaded Region (restricted output from Qq to Q*)',
+          lossReason: 'Quantity transacted decreases from Q* to Qq (Red shaded loss in PS)',
+          netConclusion: 'Uncertain: depends on whether the Green gain is larger than the Red loss',
         };
       }
       break;
@@ -189,34 +189,34 @@ export function calculateMarketMetrics(state: MarketState): MarketMetrics {
         csChange = 'decrease';
         psChange = 'decrease';
 
-        csAreaDesc = 'Area P1 A E1';
-        psAreaDesc = 'Area B P2 F';
-        changeCsDesc = '- Area B - Area C - Area E (Decreases)';
-        changePsDesc = '- Area F - Area G (Decreases)';
-        dwlAreaDesc = 'Area E + G';
-        tssFormula = 'CS + PS + Tax Revenue (Area B+C+F)';
+        csAreaDesc = 'Shaded Light Blue Triangle (below Demand down to Buyer Price P₁ across Q₁)';
+        psAreaDesc = 'Shaded Amber Triangle (above original Supply S₀ up to Net Seller Price P₂ across Q₁)';
+        changeCsDesc = '− Red Loss (Decreases unambiguously)';
+        changePsDesc = '− Red Loss (Decreases unambiguously)';
+        dwlAreaDesc = 'Red Shaded Triangle between Q₁ and Q* (Deadweight Loss from underproduction)';
+        tssFormula = 'CS + PS + Tax Revenue (TSS reduced by Red Deadweight Loss)';
 
         changeCsDetail = {
-          lossArea: 'Area B + Area C + Area E',
-          lossReason: 'Price paid by consumers increases to P1 and quantity transacted drops to Q1',
-          netConclusion: 'Decreases unambiguously',
+          lossArea: 'Red Shaded Region (higher buyer price P₁ and quantity falling to Q₁)',
+          lossReason: 'Price paid by consumers increases to P₁ and quantity transacted drops to Q₁ (Red shaded loss in CS)',
+          netConclusion: 'Decreases unambiguously (entire change is a Red shaded loss)',
         };
 
         changePsDetail = {
-          lossArea: 'Area F + Area G',
-          lossReason: 'Net price received by producers drops to P2 and quantity transacted drops to Q1',
-          netConclusion: 'Decreases unambiguously',
+          lossArea: 'Red Shaded Region (lower net seller price P₂ and quantity falling to Q₁)',
+          lossReason: 'Net price received by producers drops to P₂ and quantity transacted drops to Q₁ (Red shaded loss in PS)',
+          netConclusion: 'Decreases unambiguously (entire change is a Red shaded loss)',
         };
 
-        taxBurdenTotalArea = 'Rectangle P2 P1 E1 F (Area between P1, P2 and Q1)';
-        taxBurdenConsumerArea = 'Upper Rectangle (Area between P1, Pe and Q1)';
-        taxBurdenProducerArea = 'Lower Rectangle (Area between Pe, P2 and Q1)';
+        taxBurdenTotalArea = 'Indigo Rectangle between P₁ (buyer price), P₂ (seller price) and Q₁';
+        taxBurdenConsumerArea = 'Upper Blue Rectangle (Area between P₁, Pe and Q₁)';
+        taxBurdenProducerArea = 'Lower Amber Rectangle (Area between Pe, P₂ and Q₁)';
         taxBurdenDetail = {
-          consumerPerUnit: 'P1 - Pe (Rise in price paid by buyers)',
-          producerPerUnit: 'Pe - P2 (Fall in net price received by sellers)',
-          totalRevenue: 'Total Tax Revenue = t × Q1 = (P1 - P2) × Q1',
-          consumerShareRatio: 'Consumer Tax Burden = (P1 - Pe) × Q1',
-          producerShareRatio: 'Producer Tax Burden = (Pe - P2) × Q1',
+          consumerPerUnit: 'P₁ - Pe (Rise in price paid by buyers)',
+          producerPerUnit: 'Pe - P₂ (Fall in net price received by sellers)',
+          totalRevenue: 'Total Tax Revenue = t × Q₁ = (P₁ - P₂) × Q₁',
+          consumerShareRatio: 'Consumer Tax Burden = (P₁ - Pe) × Q₁',
+          producerShareRatio: 'Producer Tax Burden = (Pe - P₂) × Q₁',
           elasticityNote: 'Relative tax burden depends on relative price elasticities of demand and supply: the less elastic side bears a larger share of the tax burden.',
         };
       }
@@ -234,34 +234,34 @@ export function calculateMarketMetrics(state: MarketState): MarketMetrics {
         csChange = 'increase';
         psChange = 'increase';
 
-        csAreaDesc = 'Area P1 A E1';
-        psAreaDesc = 'Area B P2 F';
-        changeCsDesc = '+ Area C + Area J + Area K (Increases)';
-        changePsDesc = '+ Area B + Area F (Increases)';
-        dwlAreaDesc = 'Area H + L';
-        tssFormula = 'CS + PS - Total Subsidy';
+        csAreaDesc = 'Shaded Light Blue Area (below Demand down to Buyer Price P₁ across Q₁)';
+        psAreaDesc = 'Shaded Amber Area (above original Supply S₀ up to Net Producer Price P₂ across Q₁)';
+        changeCsDesc = '+ Green Gain (Increases unambiguously)';
+        changePsDesc = '+ Green Gain (Increases unambiguously)';
+        dwlAreaDesc = 'Red Shaded Triangle between Q* and Q₁ (Overproduction Deadweight Loss where MC > MB)';
+        tssFormula = 'CS + PS − Total Subsidy Expenditure (TSS reduced by Red Deadweight Loss)';
 
         changeCsDetail = {
-          gainArea: 'Area C + Area J + Area K',
-          gainReason: 'Price paid decreases to P1 and quantity transacted increases to Q1',
-          netConclusion: 'Increases unambiguously',
+          gainArea: 'Green Shaded Region (lower buyer price P₁ and quantity expanding to Q₁)',
+          gainReason: 'Price paid by buyers decreases to P₁ and quantity transacted increases to Q₁ (Green shaded gain in CS)',
+          netConclusion: 'Increases unambiguously (entire change is a Green shaded gain)',
         };
 
         changePsDetail = {
-          gainArea: 'Area B + Area F',
-          gainReason: 'Price received by producers increases to P2 and quantity transacted increases to Q1',
-          netConclusion: 'Increases unambiguously',
+          gainArea: 'Green Shaded Region (higher net producer price P₂ and quantity expanding to Q₁)',
+          gainReason: 'Net price received by producers increases to P₂ and quantity transacted increases to Q₁ (Green shaded gain in PS)',
+          netConclusion: 'Increases unambiguously (entire change is a Green shaded gain)',
         };
 
-        subsidyBenefitTotalArea = 'Rectangle P1 P2 F E1 (Area between P2, P1 and Q1)';
-        subsidyBenefitConsumerArea = 'Lower Rectangle (Area between Pe, P1 and Q1)';
-        subsidyBenefitProducerArea = 'Upper Rectangle (Area between P2, Pe and Q1)';
+        subsidyBenefitTotalArea = 'Emerald Rectangle between P₂ (seller price), P₁ (buyer price) and Q₁';
+        subsidyBenefitConsumerArea = 'Lower Cyan Rectangle (Area between Pe, P₁ and Q₁)';
+        subsidyBenefitProducerArea = 'Upper Emerald Rectangle (Area between P₂, Pe and Q₁)';
         subsidyBenefitDetail = {
-          consumerPerUnit: 'Pe - P1 (Fall in price paid by buyers)',
-          producerPerUnit: 'P2 - Pe (Rise in net price received by sellers)',
-          totalExpenditure: 'Total Subsidy Expenditure = s × Q1 = (P2 - P1) × Q1',
-          consumerShareRatio: 'Consumer Subsidy Benefit = (Pe - P1) × Q1',
-          producerShareRatio: 'Producer Subsidy Benefit = (P2 - Pe) × Q1',
+          consumerPerUnit: 'Pe - P₁ (Fall in price paid by buyers)',
+          producerPerUnit: 'P₂ - Pe (Rise in net price received by sellers)',
+          totalExpenditure: 'Total Subsidy Expenditure = s × Q₁ = (P₂ - P₁) × Q₁',
+          consumerShareRatio: 'Consumer Subsidy Benefit = (Pe - P₁) × Q₁',
+          producerShareRatio: 'Producer Subsidy Benefit = (P₂ - Pe) × Q₁',
           elasticityNote: 'Relative subsidy benefit depends on relative price elasticities of demand and supply: the less elastic side enjoys a larger share of the subsidy benefit.',
         };
       }

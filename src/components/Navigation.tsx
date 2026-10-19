@@ -1,7 +1,7 @@
 import React from 'react';
-import { BookOpen, BarChart3, HelpCircle } from 'lucide-react';
+import { BookOpen, BarChart3, HelpCircle, ArrowLeftRight } from 'lucide-react';
 
-export type NavTab = 'explorer' | 'practice' | 'guide';
+export type NavTab = 'explorer' | 'shifts' | 'practice' | 'guide';
 
 interface NavigationProps {
   activeTab: NavTab;
@@ -25,7 +25,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             className="text-left group cursor-pointer focus-visible:outline-none"
           >
             <span className="text-base sm:text-lg font-bold tracking-tight text-stone-900 group-hover:text-[#2d6a4f] transition-colors whitespace-nowrap shrink-0 block">
-              Econ Efficiency Studio
+              Market Intervention & Economic Efficiency
             </span>
           </button>
         </div>
@@ -42,6 +42,18 @@ export const Navigation: React.FC<NavigationProps> = ({
           >
             <BarChart3 className="w-4 h-4 text-[#52b788]" />
             <span>Intervention Explorer</span>
+          </button>
+
+          <button
+            onClick={() => onTabChange('shifts')}
+            className={`px-3.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg whitespace-nowrap shrink-0 transition-colors cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'shifts'
+                ? 'bg-[#eef7f2] text-[#2d6a4f] font-semibold border border-[#cde6d8]'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100/60'
+            }`}
+          >
+            <ArrowLeftRight className="w-4 h-4 text-[#52b788]" />
+            <span>Demand & Supply Shifts</span>
           </button>
 
           <button
@@ -68,8 +80,6 @@ export const Navigation: React.FC<NavigationProps> = ({
             <span>Notes & Rules</span>
           </button>
         </nav>
-
-
       </div>
 
       {/* Mobile secondary tab strip */}
@@ -81,6 +91,14 @@ export const Navigation: React.FC<NavigationProps> = ({
           }`}
         >
           Explorer
+        </button>
+        <button
+          onClick={() => onTabChange('shifts')}
+          className={`px-3 py-1 text-xs whitespace-nowrap rounded-md ${
+            activeTab === 'shifts' ? 'bg-[#eef7f2] text-[#2d6a4f] font-semibold border border-[#cde6d8]' : 'text-stone-600'
+          }`}
+        >
+          Shifts
         </button>
         <button
           onClick={() => onTabChange('practice')}

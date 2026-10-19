@@ -451,7 +451,11 @@ export const InterventionExplorer: React.FC = () => {
                 }`}
               >
                 <div className="text-[11px] text-stone-500">Inspect on Diagram:</div>
-                <div>Change in CS</div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block" title="Green = Gain" />
+                  <span className="w-2 h-2 rounded-full bg-rose-600 inline-block" title="Red = Loss" />
+                  <span>Change in CS</span>
+                </div>
               </button>
 
               <button
@@ -463,7 +467,11 @@ export const InterventionExplorer: React.FC = () => {
                 }`}
               >
                 <div className="text-[11px] text-stone-500">Inspect on Diagram:</div>
-                <div>Change in PS</div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block" title="Green = Gain" />
+                  <span className="w-2 h-2 rounded-full bg-rose-600 inline-block" title="Red = Loss" />
+                  <span>Change in PS</span>
+                </div>
               </button>
             </div>
 
@@ -495,41 +503,65 @@ export const InterventionExplorer: React.FC = () => {
             {showChangeExplanations && (
               <div className="space-y-2.5 text-xs text-stone-700 pt-1">
                 {/* Change in CS box */}
-                <div className="p-3 bg-stone-50 rounded-lg border border-stone-200/80 space-y-1">
-                  <span className="font-bold text-sky-900 block">
+                <div className="p-3 bg-stone-50 rounded-lg border border-stone-200/80 space-y-2">
+                  <span className="font-bold text-sky-900 block text-xs sm:text-sm">
                     Change in Consumer Surplus (CS): {activeMetrics.changeCsDesc}
                   </span>
                   {activeMetrics.changeCsDetail.gainArea && (
-                    <p className="text-[#2d6a4f]">
-                      <strong>+ Gain:</strong> {activeMetrics.changeCsDetail.gainReason} ({activeMetrics.changeCsDetail.gainArea})
-                    </p>
+                    <div className="p-2 rounded-md bg-emerald-50/80 border border-emerald-200 text-[#1b4332] space-y-0.5">
+                      <div className="flex items-center gap-1.5 font-bold text-emerald-800 text-[11px]">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 border border-emerald-600 inline-block" />
+                        <span>+ Gain in CS (Green Shaded Region on Diagram):</span>
+                      </div>
+                      <p className="text-[11px] text-emerald-900 leading-relaxed pl-4">
+                        {activeMetrics.changeCsDetail.gainReason}
+                      </p>
+                    </div>
                   )}
                   {activeMetrics.changeCsDetail.lossArea && (
-                    <p className="text-rose-800">
-                      <strong>- Loss:</strong> {activeMetrics.changeCsDetail.lossReason} ({activeMetrics.changeCsDetail.lossArea})
-                    </p>
+                    <div className="p-2 rounded-md bg-rose-50/80 border border-rose-200 text-rose-900 space-y-0.5">
+                      <div className="flex items-center gap-1.5 font-bold text-rose-800 text-[11px]">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-rose-500 border border-rose-600 inline-block" />
+                        <span>− Loss in CS (Red Shaded Region on Diagram):</span>
+                      </div>
+                      <p className="text-[11px] text-rose-900 leading-relaxed pl-4">
+                        {activeMetrics.changeCsDetail.lossReason}
+                      </p>
+                    </div>
                   )}
-                  <div className="pt-1 text-stone-600 font-medium border-t border-stone-200">
+                  <div className="pt-1.5 text-stone-700 font-semibold border-t border-stone-200 text-[11px]">
                     Conclusion: {activeMetrics.changeCsDetail.netConclusion}
                   </div>
                 </div>
 
                 {/* Change in PS box */}
-                <div className="p-3 bg-stone-50 rounded-lg border border-stone-200/80 space-y-1">
-                  <span className="font-bold text-amber-900 block">
+                <div className="p-3 bg-stone-50 rounded-lg border border-stone-200/80 space-y-2">
+                  <span className="font-bold text-amber-900 block text-xs sm:text-sm">
                     Change in Producer Surplus (PS): {activeMetrics.changePsDesc}
                   </span>
                   {activeMetrics.changePsDetail.gainArea && (
-                    <p className="text-[#2d6a4f]">
-                      <strong>+ Gain:</strong> {activeMetrics.changePsDetail.gainReason} ({activeMetrics.changePsDetail.gainArea})
-                    </p>
+                    <div className="p-2 rounded-md bg-emerald-50/80 border border-emerald-200 text-[#1b4332] space-y-0.5">
+                      <div className="flex items-center gap-1.5 font-bold text-emerald-800 text-[11px]">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 border border-emerald-600 inline-block" />
+                        <span>+ Gain in PS (Green Shaded Region on Diagram):</span>
+                      </div>
+                      <p className="text-[11px] text-emerald-900 leading-relaxed pl-4">
+                        {activeMetrics.changePsDetail.gainReason}
+                      </p>
+                    </div>
                   )}
                   {activeMetrics.changePsDetail.lossArea && (
-                    <p className="text-rose-800">
-                      <strong>- Loss:</strong> {activeMetrics.changePsDetail.lossReason} ({activeMetrics.changePsDetail.lossArea})
-                    </p>
+                    <div className="p-2 rounded-md bg-rose-50/80 border border-rose-200 text-rose-900 space-y-0.5">
+                      <div className="flex items-center gap-1.5 font-bold text-rose-800 text-[11px]">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-rose-500 border border-rose-600 inline-block" />
+                        <span>− Loss in PS (Red Shaded Region on Diagram):</span>
+                      </div>
+                      <p className="text-[11px] text-rose-900 leading-relaxed pl-4">
+                        {activeMetrics.changePsDetail.lossReason}
+                      </p>
+                    </div>
                   )}
-                  <div className="pt-1 text-stone-600 font-medium border-t border-stone-200">
+                  <div className="pt-1.5 text-stone-700 font-semibold border-t border-stone-200 text-[11px]">
                     Conclusion: {activeMetrics.changePsDetail.netConclusion}
                   </div>
                 </div>
